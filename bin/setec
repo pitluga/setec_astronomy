@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+$:.unshift File.expand_path('../../lib', __FILE__)
+
+require 'setec_astronomy/cli'
+
+SetecAstronomy::CLI.start
