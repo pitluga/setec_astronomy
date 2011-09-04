@@ -32,19 +32,33 @@
 # - aContentsHash: "plain contents" refers to the database file, minus the
 #   database header, decrypted by FinalKey.
 #   * PlainContents = Decrypt_with_FinalKey(DatabaseFile - DatabaseHeader)
+require 'base64'
+require 'rubygems'
+require 'fast-aes'
 class Header
+
+  ENCRYPTION_FLAGS = [
+     [1 , 'SHA2'    ],
+     [2 , 'Rijndael'],
+     [2 , 'AES'     ],
+     [4 , 'ArcFour' ],
+     [8 , 'TwoFish' ]
+  ]
+
+	attr_reader :encryption_iv
+  attr_reader :ngroups
 
   def initialize(header_bytes)
     @signature1 = header_bytes[0..4].unpack('L*').first
     @signature2 = header_bytes[4..8].unpack('L*').first
     @flags   = header_bytes[8..12].unpack('L*').first
     @version = header_bytes[12..16].unpack('L*').first
-    @master_seed = header_bytes[16..32]
-    @encryption_iv = header_bytes[32..48]
-    @groups = header_bytes[48..52].unpack('L*').first
+    @master_seed = header_bytes[16...32]
+    @encryption_iv = header_bytes[32...48]
+    @ngroups = header_bytes[48..52].unpack('L*').first
     @entries = header_bytes[52..56].unpack('L*').first
     @contents_hash = header_bytes[56..88]
-    @master_seed2 = header_bytes[88..120]
+    @master_seed2 = header_bytes[88...120]
     @rounds = header_bytes[120..-1].unpack('L*').first
   end
 
@@ -52,32 +66,31 @@ class Header
     @signature1 == 0x9AA2D903 && @signature2 == 0xB54BFB65
   end
 
-  def final_key(master_key)
-    key = Digest::SHA2.new.update(master_key)
-    p key
-    cipher = OpenSSL::Cipher::Cipher.new("aes-256-ecb")
-    cipher.encrypt
-    cipher.key = @master_seed2
-    p @flags
-
-    @rounds.times do |i|
-      puts i if i % 1000 == 0
-      cipher = OpenSSL::Cipher::Cipher.new("aes-256-ecb")
-      cipher.encrypt
-      cipher.key = @master_seed2
-      cipher.iv = @encryption_iv
-      key = cipher.update(key.to_s) << cipher.final
-    end
-
-    p "after #{@rounds} rounds"
-    p key
-    # cipher = AES.new(masterseed2,  AES.MODE_ECB)
-    
-    #rounds times
-    #key = cipher.encrypt(key) 
-    # key = hashlib.sha256(key).digest()
-
-    # hashlib.sha256(masterseed + key).digest()
+	def encryption_type
+		puts "flags are #{@flags.to_s(2).rjust(8, '0')}"
+		ENCRYPTION_FLAGS.each do |(flag_mask, encryption_type)|
+			return encryption_type if @flags & flag_mask
+		end
+		'Unknown'
   end
 
+  def final_key(master_key)
+    key = Digest::SHA2.new.update(master_key).digest
+		puts "using master_seed: #{Base64.encode64(@master_seed)}"
+		puts "using master_seed2: #{Base64.encode64(@master_seed2)}"
+		aes = FastAES.new(@master_seed2)
+
+		puts "starting_key: #{Base64.encode64(key)}"
+
+    puts "going #{@rounds} rounds"
+    @rounds.times do |i|
+	    key = aes.encrypt(key)
+    end
+
+    key = Digest::SHA2.new.update(key).digest
+		puts "after_rounds: #{Base64.encode64(key)}"
+    key = Digest::SHA2.new.update(@master_seed + key).digest
+		puts "all_done: #{Base64.encode64(key)}"
+		key
+  end
 end
