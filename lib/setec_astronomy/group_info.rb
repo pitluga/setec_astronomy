@@ -31,13 +31,43 @@ class GroupInfo
     [0x6, 'expire_time', :date],
     [0x7, 'imageid', :int],
     [0x8, 'level', :short],
-    [0x9, 'flags', :int]
+    [0x9, 'flags', :int],
+    [0xFFF, 'terminator', :null]
   ]
+  FIELD_TERMINATOR = 0xFFF
 
   def self.extract_from_payload(header, payload)
-    
+    group_infos = []
+    header.ngroups.times do
+      group_info = new(payload)
+      payload = payload[-group_info.length,group_info.length]
+      group_infos << group_info
+    end
+    group_infos
   end
 
   def initialize(payload)
+    @field_type, @field_size = payload[0,6].unpack('SI')
+    @field_name, @field_data_type = _field_type_info(field_type)
+  end
+
+  def length
+    @field_size
+  end
+
+  def terminator_field?
+    @field_type == FIELD_TERMINATOR
+  end
+
+  def _field_type_info(type_code)
+    (_, name, data_type) = FIELD_TYPES.detect do |(code, *rest)|
+      code == type_code
+    end
+    [name, data_type]
+  end
+end
+
+class GroupInfoField
+  def initialize
   end
 end
