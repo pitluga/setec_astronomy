@@ -1,7 +1,6 @@
 class KeypassxDatabase
 
-  attr_reader :header
-  attr_reader :groups
+  attr_reader :header, :groups, :entries
 
   def self.open(path)
     self.new(File.read(path))
@@ -15,7 +14,9 @@ class KeypassxDatabase
   def unlock(master_password)
     @final_key = header.final_key(master_password)
     decrypt_payload
-    @groups = Group.extract_from_payload(header, @payload)
+    payload_io = StringIO.new(@payload)
+    @groups = Group.extract_from_payload(header, payload_io)
+    @entries = Entry.extract_from_payload(header, payload_io)
     true
   end
 

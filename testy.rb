@@ -8,7 +8,8 @@ puts "Total Groups: #{db.header.ngroups}"
 db.groups.each do |group|
   puts " - #{group.name}"
 end
+puts "Total Entries: #{db.header.nentries}"
 db.entries.each do |entry|
-  print entry.password
+  puts " - #{entry.title}: #{entry.username} / #{entry.password} (#{entry.notes})"
 end
 print 'DONE'

@@ -23,9 +23,8 @@ require 'stringio'
 #   * 0009: Flags, 32-bit value, FIELDSIZE = 4
 #   * FFFF: Group entry terminator, FIELDSIZE must be 0
 class Group
-  def self.extract_from_payload(header, payload)
+  def self.extract_from_payload(header, payload_io)
     groups = []
-    payload_io = StringIO.new(payload)
     header.ngroups.times do
       group = Group.new(payload_io)
       groups << group

@@ -46,7 +46,7 @@ class Header
   ]
 
 	attr_reader :encryption_iv
-  attr_reader :ngroups
+  attr_reader :ngroups, :nentries
 
   def initialize(header_bytes)
     @signature1 = header_bytes[0..4].unpack('L*').first
@@ -56,7 +56,7 @@ class Header
     @master_seed = header_bytes[16...32]
     @encryption_iv = header_bytes[32...48]
     @ngroups = header_bytes[48..52].unpack('L*').first
-    @entries = header_bytes[52..56].unpack('L*').first
+    @nentries = header_bytes[52..56].unpack('L*').first
     @contents_hash = header_bytes[56..88]
     @master_seed2 = header_bytes[88...120]
     @rounds = header_bytes[120..-1].unpack('L*').first
