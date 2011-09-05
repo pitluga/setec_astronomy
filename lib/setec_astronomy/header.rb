@@ -67,7 +67,6 @@ class Header
   end
 
 	def encryption_type
-		puts "flags are #{@flags.to_s(2).rjust(8, '0')}"
 		ENCRYPTION_FLAGS.each do |(flag_mask, encryption_type)|
 			return encryption_type if @flags & flag_mask
 		end
@@ -76,21 +75,14 @@ class Header
 
   def final_key(master_key)
     key = Digest::SHA2.new.update(master_key).digest
-		puts "using master_seed: #{Base64.encode64(@master_seed)}"
-		puts "using master_seed2: #{Base64.encode64(@master_seed2)}"
 		aes = FastAES.new(@master_seed2)
 
-		puts "starting_key: #{Base64.encode64(key)}"
-
-    puts "going #{@rounds} rounds"
     @rounds.times do |i|
 	    key = aes.encrypt(key)
     end
 
     key = Digest::SHA2.new.update(key).digest
-		puts "after_rounds: #{Base64.encode64(key)}"
     key = Digest::SHA2.new.update(@master_seed + key).digest
-		puts "all_done: #{Base64.encode64(key)}"
 		key
   end
 end

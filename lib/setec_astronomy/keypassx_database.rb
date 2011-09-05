@@ -1,6 +1,7 @@
 class KeypassxDatabase
 
   attr_reader :header
+  attr_reader :groups
 
   def self.open(path)
     self.new(File.read(path))
@@ -14,7 +15,7 @@ class KeypassxDatabase
   def unlock(master_password)
     @final_key = header.final_key(master_password)
     decrypt_payload
-    @groups = GroupInfo.extract_from_payload(header, @payload)
+    @groups = Group.extract_from_payload(header, @payload)
     true
   end
 
@@ -23,10 +24,6 @@ class KeypassxDatabase
   end
 
   def decrypt_payload
-    puts "using encryption_iv #{Base64.encode64(header.encryption_iv)}"
-    puts "payload encrypted: #{Digest::SHA2.new.update(@encrypted_payload).hexdigest}"
     @payload = AESCrypt.decrypt(@encrypted_payload, @final_key, header.encryption_iv, 'AES-256-CBC')
-
-    puts "payload decrypted: #{Digest::SHA2.new.update(@payload).hexdigest}"
   end
 end

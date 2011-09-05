@@ -4,9 +4,9 @@ require 'setec_astronomy'
 
 db = KeypassxDatabase.open('/Users/phinze/dev/setec_astronomy/spec/test_database.kdb')
 db.unlock('testmasterpassword')
-p db.header.ngroups
+puts "Total Groups: #{db.header.ngroups}"
 db.groups.each do |group|
-  print group.name
+  puts " - #{group.name}"
 end
 db.entries.each do |entry|
   print entry.password

@@ -1,3 +1,5 @@
+require 'stringio'
+
 # One group: [FIELDTYPE(FT)][FIELDSIZE(FS)][FIELDDATA(FD)]
 #            [FT+FS+(FD)][FT+FS+(FD)][FT+FS+(FD)][FT+FS+(FD)][FT+FS+(FD)]...
 # 
@@ -20,7 +22,37 @@
 #   * 0008: Level, FIELDSIZE = 2
 #   * 0009: Flags, 32-bit value, FIELDSIZE = 4
 #   * FFFF: Group entry terminator, FIELDSIZE must be 0
-class GroupInfo
+class Group
+  def self.extract_from_payload(header, payload)
+    groups = []
+    payload_io = StringIO.new(payload)
+    header.ngroups.times do
+      group = Group.new(payload_io)
+      groups << group
+    end
+    groups
+  end
+
+  def initialize(payload_io)
+    fields = []
+    begin
+      field = GroupField.new(payload_io)
+      fields << field
+    end while not field.terminator?
+
+    @fields = fields
+  end
+
+  def length
+    @fields.map(&:length).reduce(&:+)
+  end
+
+  def name
+    @fields.detect { |field| field.name == 'group_name' }.data
+  end
+end
+
+class GroupField
   FIELD_TYPES = [
     [0x0, 'ignored', :null],
     [0x1, 'groupid', :int],
@@ -32,42 +64,33 @@ class GroupInfo
     [0x7, 'imageid', :int],
     [0x8, 'level', :short],
     [0x9, 'flags', :int],
-    [0xFFF, 'terminator', :null]
+    [0xFFFF, 'terminator', :null]
   ]
-  FIELD_TERMINATOR = 0xFFF
+  FIELD_TERMINATOR = 0xFFFF
+  TYPE_CODE_FIELD_SIZE = 2   # unsigned short integer
+  DATA_LENGTH_FIELD_SIZE = 4 # unsigned integer
 
-  def self.extract_from_payload(header, payload)
-    group_infos = []
-    header.ngroups.times do
-      group_info = new(payload)
-      payload = payload[-group_info.length,group_info.length]
-      group_infos << group_info
-    end
-    group_infos
-  end
+
+  attr_reader :name, :data_type, :data
 
   def initialize(payload)
-    @field_type, @field_size = payload[0,6].unpack('SI')
-    @field_name, @field_data_type = _field_type_info(field_type)
+    type_code, @data_length = payload.read(TYPE_CODE_FIELD_SIZE + DATA_LENGTH_FIELD_SIZE).unpack('SI')
+    @name, @data_type = _parse_type_code(type_code)
+    @data = payload.read(@data_length)
+  end
+
+  def terminator?
+    name == 'terminator'
   end
 
   def length
-    @field_size
+    TYPE_CODE_FIELD_SIZE + DATA_LENGTH_FIELD_SIZE + @data_length
   end
 
-  def terminator_field?
-    @field_type == FIELD_TERMINATOR
-  end
-
-  def _field_type_info(type_code)
+  def _parse_type_code(type_code)
     (_, name, data_type) = FIELD_TYPES.detect do |(code, *rest)|
       code == type_code
     end
     [name, data_type]
-  end
-end
-
-class GroupInfoField
-  def initialize
   end
 end
