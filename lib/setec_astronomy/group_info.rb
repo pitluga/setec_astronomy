@@ -47,7 +47,7 @@ class Group
   end
 
   def name
-    @fields.detect { |field| field.name == 'group_name' }.data
+    @fields.detect { |field| field.name == 'group_name' }.data.chomp("\000")
   end
 end
 

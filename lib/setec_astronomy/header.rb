@@ -32,9 +32,6 @@
 # - aContentsHash: "plain contents" refers to the database file, minus the
 #   database header, decrypted by FinalKey.
 #   * PlainContents = Decrypt_with_FinalKey(DatabaseFile - DatabaseHeader)
-require 'base64'
-require 'rubygems'
-require 'fast-aes'
 class Header
 
   ENCRYPTION_FLAGS = [

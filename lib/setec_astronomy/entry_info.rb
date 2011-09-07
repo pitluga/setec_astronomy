@@ -60,11 +60,11 @@ class Entry
   end
 
   def password
-    @fields.detect { |field| field.name == 'password' }.data
+    @fields.detect { |field| field.name == 'password' }.data.chomp("\000")
   end
 
   def title
-    @fields.detect { |field| field.name == 'title' }.data
+    @fields.detect { |field| field.name == 'title' }.data.chomp("\000")
   end
 
   def username

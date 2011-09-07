@@ -11,6 +11,10 @@ class KeypassxDatabase
     @encrypted_payload = raw_db[124..-1]
   end
 
+  def entry(title)
+    @entries.detect { |e| e.title == title }
+  end
+
   def unlock(master_password)
     @final_key = header.final_key(master_password)
     decrypt_payload
@@ -18,6 +22,8 @@ class KeypassxDatabase
     @groups = Group.extract_from_payload(header, payload_io)
     @entries = Entry.extract_from_payload(header, payload_io)
     true
+  rescue OpenSSL::Cipher::CipherError
+    false
   end
 
   def valid?

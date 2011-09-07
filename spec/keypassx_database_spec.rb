@@ -22,4 +22,19 @@ describe KeypassxDatabase do
       @db.unlock('bad password').should be_false
     end
   end
+
+  describe "an unlocked database" do
+    before :each do
+      @db = KeypassxDatabase.open(TEST_DATABASE_PATH)
+      @db.unlock('testmasterpassword')
+    end
+
+    it "can find entries by their title" do
+      @db.entry("test entry").password.should == "testpassword"
+    end
+
+    it "can find groups" do
+      @db.groups.map(&:name).sort.should == ["Internet", "eMail"]
+    end
+  end
 end

@@ -1,3 +1,6 @@
+require 'base64'
+require 'rubygems'
+require 'fast-aes'
 require 'openssl'
 require 'digest/sha2'
 
