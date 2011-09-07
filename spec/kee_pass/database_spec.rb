@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe KeypassxDatabase do
+describe SetecAstronomy::KeePass::Database do
   describe 'self.open' do
     it "creates a new instance of the databse with the file" do
-      db = KeypassxDatabase.open(TEST_DATABASE_PATH)
+      db = SetecAstronomy::KeePass::Database.open(TEST_DATABASE_PATH)
       db.should_not be_nil
     end
   end
 
   describe "unlock" do
     before :each do
-      @db = KeypassxDatabase.open(TEST_DATABASE_PATH)
+      @db = SetecAstronomy::KeePass::Database.open(TEST_DATABASE_PATH)
       @db.should be_valid
     end
 
@@ -25,7 +25,7 @@ describe KeypassxDatabase do
 
   describe "an unlocked database" do
     before :each do
-      @db = KeypassxDatabase.open(TEST_DATABASE_PATH)
+      @db = SetecAstronomy::KeePass::Database.open(TEST_DATABASE_PATH)
       @db.unlock('testmasterpassword')
     end
 

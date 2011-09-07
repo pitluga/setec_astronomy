@@ -2,7 +2,7 @@ $:.unshift File.expand_path('./lib/')
 require 'pp'
 require 'setec_astronomy'
 
-db = KeypassxDatabase.open('/Users/phinze/dev/setec_astronomy/spec/test_database.kdb')
+db = SetecAstronomy::KeePass::Database.open(File.expand_path('../spec/test_database.kdb', __FILE__))
 db.unlock('testmasterpassword')
 puts "Total Groups: #{db.header.ngroups}"
 db.groups.each do |group|
