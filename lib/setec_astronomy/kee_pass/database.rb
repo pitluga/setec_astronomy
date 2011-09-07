@@ -28,6 +28,10 @@ module SetecAstronomy
         false
       end
 
+      def search(pattern)
+        entries.select { |e| e.title =~ /#{pattern}/ }
+      end
+
       def valid?
         @header.valid?
       end

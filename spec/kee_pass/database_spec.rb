@@ -36,5 +36,10 @@ describe SetecAstronomy::KeePass::Database do
     it "can find groups" do
       @db.groups.map(&:name).sort.should == ["Internet", "eMail"]
     end
+
+    it "can search for entries" do
+      entries = @db.search "test"
+      entries.first.title.should == "test entry"
+    end
   end
 end

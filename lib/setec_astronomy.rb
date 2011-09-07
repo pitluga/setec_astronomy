@@ -1,9 +1,10 @@
 require 'base64'
 require 'stringio'
-require 'rubygems'
-require 'fast-aes'
 require 'openssl'
 require 'digest/sha2'
+
+require 'rubygems'
+require 'fast-aes'
 
 require 'setec_astronomy/kee_pass/database'
 require 'setec_astronomy/kee_pass/entry'
