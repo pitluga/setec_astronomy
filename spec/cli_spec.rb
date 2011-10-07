@@ -1,11 +1,25 @@
 require 'spec_helper'
-require 'clipboard'
+require 'setec_astronomy/cli'
+require 'pty'
+require 'expect'
 
 describe "Command Line" do
   def setec(options, master_password = nil)
     bin = File.expand_path('../../bin/setec', __FILE__)
-    auth = master_password.nil? ? "" : "echo #{master_password} | "
-    `#{auth} #{bin} #{options} --file=#{TEST_DATABASE_PATH}`
+    cmd = "#{bin} #{options} --file=#{TEST_DATABASE_PATH}"
+    output = ''
+    PTY.spawn cmd do |reader, writer, pid|
+      reader.expect("Password:") do
+        unless master_password.nil?
+          writer.puts master_password
+          reader.gets
+        end
+      end
+      until reader.eof?
+        output << reader.gets
+      end
+    end
+    output
   end
 
   describe "search" do
