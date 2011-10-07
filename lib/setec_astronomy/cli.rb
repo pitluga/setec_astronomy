@@ -3,7 +3,6 @@ require 'setec_astronomy/prompt'
 
 require 'thor'
 require 'clipboard'
-require 'highline/import'
 
 module SetecAstronomy
   class CLI < Thor
