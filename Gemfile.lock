@@ -1,3 +1,12 @@
+PATH
+  remote: .
+  specs:
+    setec_astronomy (0.1.0)
+      clipboard (~> 0.9)
+      fast-aes (~> 0.1)
+      highline (~> 1.6)
+      thor (~> 0.14)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -19,8 +28,5 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  clipboard
-  fast-aes
-  highline
-  rspec
-  thor
+  rspec (= 2.6.0)
+  setec_astronomy!
