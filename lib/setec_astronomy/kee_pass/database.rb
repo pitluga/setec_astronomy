@@ -29,7 +29,7 @@ module SetecAstronomy
       end
 
       def search(pattern)
-        entries.select { |e| e.title =~ /#{pattern}/ }
+        entries.select { |e| e.title =~ /#{pattern}/i }
       end
 
       def valid?
