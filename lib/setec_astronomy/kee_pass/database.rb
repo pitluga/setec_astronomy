@@ -5,7 +5,8 @@ module SetecAstronomy
       attr_reader :header, :groups, :entries
 
       def self.open(path)
-        self.new(File.read(path))
+        content = File.respond_to?(:binread) ? File.binread(path) : File.read(path)
+        self.new(content)
       end
 
       def initialize(raw_db)
