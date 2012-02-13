@@ -2,7 +2,7 @@ Gem::Specification.new do |s|
   s.name = "setec_astronomy"
   s.summary = "Command line and API access to KeePassX databases"
   s.description = "See http://github.com/pitluga/setec_astronomy"
-  s.version = "0.1.0"
+  s.version = "0.2.0"
   s.author = "Tony Pitluga"
   s.email = "tony.pitluga@gmail.com"
   s.homepage = "http://github.com/pitluga/supply_drop"
