@@ -41,5 +41,10 @@ describe SetecAstronomy::KeePass::Database do
       entries = @db.search "test"
       entries.first.title.should == "test entry"
     end
+
+    it "can search for entries case-insensitively" do
+      entries = @db.search "TEST"
+      entries.first.title.should == "test entry"
+    end
   end
 end
