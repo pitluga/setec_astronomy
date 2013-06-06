@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = "0.3.0"
   s.authors = ["Tony Pitluga", "Paul Hinze"]
   s.email = ["tony.pitluga@gmail.com", "paul.t.hinze@gmail.com"]
-  s.homepage = "http://github.com/pitluga/supply_drop"
+  s.homepage = "https://github.com/pitluga/setec_astronomy"
   s.files = `git ls-files`.split("\n")
   s.bindir = "bin"
   s.executables = ["setec"]
